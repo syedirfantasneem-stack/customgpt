@@ -6,7 +6,7 @@ import time
 
 # Demo API KEY
 KEY = "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"
-st.write(KEY)
+#st.write(KEY)
 
 client = OpenAI(api_key=KEY)
 
