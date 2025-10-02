@@ -6,7 +6,7 @@ import time
 # Demo API KEY
 
 
-client = OpenAI(st.secrets.api_key_mine)
+client = OpenAI(st.secrets["api_key_mine"])
 
 # Demo Assistant
 ASSISTANT_ID = "asst_SRCRvmDX03cKACsoqaAykdwH"
