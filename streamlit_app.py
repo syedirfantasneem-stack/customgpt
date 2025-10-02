@@ -3,10 +3,9 @@ from openai import OpenAI
 import time
 
 # Initialize client (make sure your OPENAI_API_KEY is set in environment)
+
 # Demo API KEY
-
-
-client = OpenAI(st.secrets["api_key_mine"])
+client = OpenAI(api_key=st.secrets["api_key_mine"])
 
 # Demo Assistant
 ASSISTANT_ID = "asst_SRCRvmDX03cKACsoqaAykdwH"
