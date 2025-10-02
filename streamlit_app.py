@@ -26,17 +26,17 @@ if st.button("Submit Query"):
         st.warning("Please enter a description of your problem.")
     else:
         # Step 1: Create a thread
-        thread = client.threads.create()
+        thread = client.beta.threads.create()
 
         # Step 2: Add the user message to the thread
-        client.threads.messages.create(
+        client.beta.threads.messages.create(
             thread_id=thread.id,
             role="user",
             content=query
         )
 
         # Step 3: Run the assistant on this thread
-        run = client.threads.runs.create(
+        run = client.beta.threads.runs.create(
             thread_id=thread.id,
             assistant_id=ASSISTANT_ID
         )
@@ -44,7 +44,7 @@ if st.button("Submit Query"):
         # Step 4: Poll until run completes
         with st.spinner("Thinking..."):
             while True:
-                run_status = client.threads.runs.retrieve(
+                run_status = client.beta.threads.runs.retrieve(
                     thread_id=thread.id,
                     run_id=run.id
                 )
@@ -56,7 +56,7 @@ if st.button("Submit Query"):
                 time.sleep(2)
 
         # Step 5: Retrieve messages
-        messages = client.threads.messages.list(thread_id=thread.id)
+        messages = client.beta.threads.messages.list(thread_id=thread.id)
 
         # Find the assistant's last reply
         answer = None
