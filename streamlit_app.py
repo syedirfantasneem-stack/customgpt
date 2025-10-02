@@ -3,13 +3,12 @@ from openai import OpenAI
 import time
 
 # Initialize client (make sure your OPENAI_API_KEY is set in environment)
-
+# Demo API KEY
 API_KEY = "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"
-
 
 client = OpenAI(api_key=API_KEY)
 
-# Replace with your actual assistant ID (from setup script)
+# Demo Assistant
 ASSISTANT_ID = "asst_SRCRvmDX03cKACsoqaAykdwH"
 
 st.set_page_config(page_title="Testing Custom Calls...", page_icon="💬", layout="centered")
