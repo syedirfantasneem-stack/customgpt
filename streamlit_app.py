@@ -1,56 +1,72 @@
 import streamlit as st
 from openai import OpenAI
+import time
 
-# Show title and description.
-st.title("💬 Chatbot")
-st.write(
-    "This is a simple chatbot that uses OpenAI's GPT-3.5 model to generate responses. "
-    "To use this app, you need to provide an OpenAI API key, which you can get [here](https://platform.openai.com/account/api-keys). "
-    "You can also learn how to build this app step by step by [following our tutorial](https://docs.streamlit.io/develop/tutorials/llms/build-conversational-apps)."
-)
+# Initialize client (make sure your OPENAI_API_KEY is set in environment)
 
-# Ask user for their OpenAI API key via `st.text_input`.
-# Alternatively, you can store the API key in `./.streamlit/secrets.toml` and access it
-# via `st.secrets`, see https://docs.streamlit.io/develop/concepts/connections/secrets-management
-openai_api_key = st.text_input("OpenAI API Key", type="password")
-if not openai_api_key:
-    st.info("Please add your OpenAI API key to continue.", icon="🗝️")
-else:
+API_KEY = "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"
 
-    # Create an OpenAI client.
-    client = OpenAI(api_key=openai_api_key)
 
-    # Create a session state variable to store the chat messages. This ensures that the
-    # messages persist across reruns.
-    if "messages" not in st.session_state:
-        st.session_state.messages = []
+client = OpenAI(api_key=API_KEY)
 
-    # Display the existing chat messages via `st.chat_message`.
-    for message in st.session_state.messages:
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
+# Replace with your actual assistant ID (from setup script)
+ASSISTANT_ID = "asst_SRCRvmDX03cKACsoqaAykdwH"
 
-    # Create a chat input field to allow the user to enter a message. This will display
-    # automatically at the bottom of the page.
-    if prompt := st.chat_input("What is up?"):
+st.set_page_config(page_title="Testing Custom Calls...", page_icon="💬", layout="centered")
 
-        # Store and display the current prompt.
-        st.session_state.messages.append({"role": "user", "content": prompt})
-        with st.chat_message("user"):
-            st.markdown(prompt)
+st.title("💬 Testing")
+st.write("Enter your problem below to get instant quote.")
 
-        # Generate a response using the OpenAI API.
-        stream = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": m["role"], "content": m["content"]}
-                for m in st.session_state.messages
-            ],
-            stream=True,
+# Text input
+query = st.text_area("Describe your issue:", height=150)
+
+if st.button("Submit Query"):
+    if not query.strip():
+        st.warning("Please enter a description of your problem.")
+    else:
+        # Step 1: Create a thread
+        thread = client.beta.threads.create()
+
+        # Step 2: Add the user message to the thread
+        client.beta.threads.messages.create(
+            thread_id=thread.id,
+            role="user",
+            content=query
         )
 
-        # Stream the response to the chat using `st.write_stream`, then store it in 
-        # session state.
-        with st.chat_message("assistant"):
-            response = st.write_stream(stream)
-        st.session_state.messages.append({"role": "assistant", "content": response})
+        # Step 3: Run the assistant on this thread
+        run = client.beta.threads.runs.create(
+            thread_id=thread.id,
+            assistant_id=ASSISTANT_ID
+        )
+
+        # Step 4: Poll until run completes
+        with st.spinner("Thinking..."):
+            while True:
+                run_status = client.beta.threads.runs.retrieve(
+                    thread_id=thread.id,
+                    run_id=run.id
+                )
+                if run_status.status == "completed":
+                    break
+                elif run_status.status in ["failed", "cancelled", "expired"]:
+                    st.error(f"Run ended with status: {run_status.status}")
+                    st.stop()
+                time.sleep(2)
+
+        # Step 5: Retrieve messages
+        messages = client.beta.threads.messages.list(thread_id=thread.id)
+
+        # Find the assistant's last reply
+        answer = None
+        for msg in messages.data:
+            if msg.role == "assistant":
+                if msg.content and msg.content[0].type == "text":
+                    answer = msg.content[0].text.value
+                break
+
+        if answer:
+            st.subheader("Assistant's Response:")
+            st.write(answer)
+        else:
+            st.warning("No response received from assistant.")
