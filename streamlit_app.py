@@ -5,8 +5,8 @@ import time
 # Initialize client (make sure your OPENAI_API_KEY is set in environment)
 
 # Demo API KEY
-API_KEY = "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"
-client = OpenAI(api_key=API_KEY)
+KEY = "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"
+client = OpenAI(api_key=KEY)
 
 # Demo Assistant
 ASSISTANT_ID = "asst_SRCRvmDX03cKACsoqaAykdwH"
