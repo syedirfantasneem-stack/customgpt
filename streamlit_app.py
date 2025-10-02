@@ -9,7 +9,6 @@ client = OpenAI(
     default_headers={"OpenAI-Beta": "assistants=v2"}
 )
 
-print(openai.__version__) 
 
 # Demo Assistant
 ASSISTANT_ID = "asst_SRCRvmDX03cKACsoqaAykdwH"
