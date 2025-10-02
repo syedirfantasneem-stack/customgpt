@@ -24,7 +24,7 @@ if st.button("Submit Query"):
         st.warning("Please enter a description of your problem.")
     else:
         # Step 1: Create a thread
-        thread = client..threads.create()
+        thread = client.threads.create()
 
         # Step 2: Add the user message to the thread
         client.threads.messages.create(
