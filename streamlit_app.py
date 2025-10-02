@@ -8,6 +8,9 @@ client = OpenAI(
     api_key="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",
     default_headers={"OpenAI-Beta": "assistants=v2"}
 )
+
+print(openai.__version__) 
+
 # Demo Assistant
 ASSISTANT_ID = "asst_SRCRvmDX03cKACsoqaAykdwH"
 
